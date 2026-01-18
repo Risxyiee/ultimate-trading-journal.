@@ -5,7 +5,7 @@ Terima kasih telah bergabung bersama komunitas trader cerdas! Untuk menggunakan 
 A. Cara Mengaktifkan Aplikasi (Online & Bisa di HP)
 Kami menggunakan layanan Vercel (Gratis) agar Anda memiliki link jurnal pribadi yang aman dan bisa diakses kapan saja.
 
-Klik Link Deploy: [MASUKKAN LINK DEPLOY KAMU DI SINI]
+Klik Link Deploy:[(https://vercel.com/new/clone?repository-url=https://github.com/Risxyiee/ultimate-trading-journal)]
 
 Login/Daftar: Gunakan akun Google atau Email Anda untuk daftar di Vercel.
 

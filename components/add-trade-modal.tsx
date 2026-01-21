@@ -23,8 +23,6 @@ export default function AddTradeModal({ onClose, onSaveTrade }: AddTradeModalPro
   const [entryPrice, setEntryPrice] = useState('')
   const [stopLoss, setStopLoss] = useState('')
   const [takeProfit, setTakeProfit] = useState('')
-  const [lot, setLot] = useState('') // State untuk Lot
-  const [balance, setBalance] = useState('') // State untuk Balance
   const [setupTypes, setSetupTypes] = useState<string[]>([])
   const [confluenceFactors, setConfluenceFactors] = useState<string[]>([])
   const [emotionalState, setEmotionalState] = useState('calm')
@@ -133,9 +131,7 @@ export default function AddTradeModal({ onClose, onSaveTrade }: AddTradeModalPro
         position: positionType,
         entry: parseFloat(entryPrice),
         sl: parseFloat(stopLoss),
-        tp: parseFloat(takeProfit), // pastikan ada koma di sini
-        lot: parseFloat(lot) || 0,    // TAMBAHKAN INI
-        balance: parseFloat(balance) || 0, // TAMBAHKAN INI
+        tp: parseFloat(takeProfit),
         pl: parseFloat(calculateActualPL().toFixed(2)),
         ratio: riskReward || '0',
         duration: calculateDuration(),
@@ -250,29 +246,19 @@ export default function AddTradeModal({ onClose, onSaveTrade }: AddTradeModalPro
               </div>
 
               {/* Take Profit */}
-              <div className="grid grid-cols-2 gap-4 mt-4">
-  <div>
-    <label className="block text-sm font-medium text-slate-300 mb-2">Lot Size</label>
-    <Input
-      type="number"
-      value={lot}
-      onChange={(e) => setLot(e.target.value)}
-      placeholder="0.01"
-      className="bg-slate-700 border-slate-600 text-slate-100"
-      step="0.01"
-    />
-  </div>
-  <div>
-    <label className="block text-sm font-medium text-slate-300 mb-2">Initial Balance ($)</label>
-    <Input
-      type="number"
-      value={balance}
-      onChange={(e) => setBalance(e.target.value)}
-      placeholder="1000"
-      className="bg-slate-700 border-slate-600 text-slate-100"
-    />
-  </div>
-</div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Take Profit (TP)</label>
+                <Input
+                  type="number"
+                  value={takeProfit}
+                  onChange={(e) => setTakeProfit(e.target.value)}
+                  placeholder="Enter take profit"
+                  className="bg-slate-700 border-slate-600 text-slate-100"
+                  step="0.01"
+                />
+              </div>
+            </div>
+
             {/* Auto-Calculated Fields */}
             <div className="grid grid-cols-2 gap-4 mt-4 p-4 bg-slate-700/50 rounded">
               <div>

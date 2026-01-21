@@ -3,8 +3,7 @@
 import { Trade } from '@/hooks/useTrades'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { TrendingUp, Target, Trophy, Plus, BarChart3, Calendar, MessageCircle } from 'lucide-react'
-import { useReferral } from '@/hooks/useReferral'
+import { TrendingUp, Target, Trophy, Plus, BarChart3, Calendar } from 'lucide-react'
 
 interface HomeDashboardProps {
   trades: Trade[]
@@ -13,8 +12,6 @@ interface HomeDashboardProps {
 }
 
 export default function HomeDashboard({ trades, onAddTrade, onNavigate }: HomeDashboardProps) {
-  const { referralCode, whatsappLink, showBadge } = useReferral()
-
   // Calculate current streak
   const calculateCurrentStreak = () => {
     if (trades.length === 0) return 0
@@ -155,15 +152,7 @@ export default function HomeDashboard({ trades, onAddTrade, onNavigate }: HomeDa
       {/* Quick Actions */}
       <div>
         <h2 className="text-2xl font-bold text-slate-100 mb-4">Quick Actions</h2>
-        
-        {/* Referral Badge */}
-        {showBadge && (
-          <div className="mb-4 inline-block px-3 py-1 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-emerald-500/50 rounded-full">
-            <p className="text-sm font-medium text-emerald-300">Promo Applied: Special Referral Discount</p>
-          </div>
-        )}
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* New Trade Button */}
           <button
             onClick={onAddTrade}
@@ -208,23 +197,6 @@ export default function HomeDashboard({ trades, onAddTrade, onNavigate }: HomeDa
               </div>
             </div>
           </button>
-
-          {/* WhatsApp Contact Button */}
-          <a
-            href={whatsappLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 p-8 text-center transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center justify-center"
-          >
-            <div className="absolute inset-0 bg-green-400 opacity-0 group-hover:opacity-20 transition-opacity" />
-            <div className="relative space-y-3 flex flex-col items-center">
-              <MessageCircle size={48} className="text-white" />
-              <div>
-                <p className="text-xl font-bold text-white">Contact Support</p>
-                <p className="text-sm text-green-100 mt-1">via WhatsApp</p>
-              </div>
-            </div>
-          </a>
         </div>
       </div>
 

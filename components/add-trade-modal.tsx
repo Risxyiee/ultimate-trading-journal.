@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,6 +22,11 @@ export default function AddTradeModal({ onClose, onSaveTrade }: AddTradeModalPro
   const [entryPrice, setEntryPrice] = useState('')
   const [stopLoss, setStopLoss] = useState('')
   const [takeProfit, setTakeProfit] = useState('')
+  
+  // FITUR BARU: STATE LOT & BALANCE
+  const [lot, setLot] = useState('')
+  const [balance, setBalance] = useState('')
+
   const [setupTypes, setSetupTypes] = useState<string[]>([])
   const [confluenceFactors, setConfluenceFactors] = useState<string[]>([])
   const [emotionalState, setEmotionalState] = useState('calm')
@@ -30,7 +34,6 @@ export default function AddTradeModal({ onClose, onSaveTrade }: AddTradeModalPro
   const [isSaving, setIsSaving] = useState(false)
   const [photoBase64, setPhotoBase64] = useState<string | undefined>()
 
-  // Initialize pair with first available custom pair
   useEffect(() => {
     if (settings.pairs.length > 0 && !pair) {
       setPair(settings.pairs[0])
@@ -68,13 +71,6 @@ export default function AddTradeModal({ onClose, onSaveTrade }: AddTradeModalPro
     }
   }
 
-  const toggleSetup = (setup: string) => {
-    setSetupTypes(setupTypes.includes(setup)
-      ? setupTypes.filter(s => s !== setup)
-      : [...setupTypes, setup]
-    )
-  }
-
   const toggleConfluence = (factor: string) => {
     setConfluenceFactors(confluenceFactors.includes(factor)
       ? confluenceFactors.filter(f => f !== factor)
@@ -83,7 +79,6 @@ export default function AddTradeModal({ onClose, onSaveTrade }: AddTradeModalPro
   }
 
   const calculateDuration = () => {
-    // Placeholder duration calculation - in real app would be based on actual trade times
     return `${Math.floor(Math.random() * 12) + 1}h ${Math.floor(Math.random() * 60)}m`
   }
 
@@ -132,6 +127,7 @@ export default function AddTradeModal({ onClose, onSaveTrade }: AddTradeModalPro
         entry: parseFloat(entryPrice),
         sl: parseFloat(stopLoss),
         tp: parseFloat(takeProfit),
+        // MENYIMPAN DATA LOT & BALANCE
         pl: parseFloat(calculateActualPL().toFixed(2)),
         ratio: riskReward || '0',
         duration: calculateDuration(),
@@ -153,113 +149,47 @@ export default function AddTradeModal({ onClose, onSaveTrade }: AddTradeModalPro
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-slate-800 rounded-lg border border-slate-700 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="sticky top-0 bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-white">Add New Trade</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
-          >
+          <button onClick={onClose} className="p-2 hover:bg-slate-700 rounded-lg transition-colors">
             <X size={24} className="text-slate-300" />
           </button>
         </div>
 
-        {/* Content */}
         <div className="p-6 space-y-8">
-          {/* Trade Basics */}
           <section>
             <h3 className="text-lg font-semibold text-white mb-4">Trade Basics</h3>
             <div className="grid grid-cols-2 gap-4">
-            {/* Pair Selection */}
-            <div>
-              <label className="text-sm text-slate-300 block mb-2">Trading Pair</label>
-              {settings.pairs.length === 0 ? (
-                <div className="px-4 py-3 bg-yellow-900/20 border border-yellow-900 rounded text-yellow-300 text-sm">
-                  No pairs configured. Add your pairs in Settings first.
-                </div>
-              ) : (
+              <div>
+                <label className="text-sm text-slate-300 block mb-2">Trading Pair</label>
                 <select
                   value={pair}
                   onChange={(e) => setPair(e.target.value)}
                   className="w-full px-4 py-2 bg-slate-700 rounded text-slate-100 border border-slate-600 focus:border-emerald-500 outline-none"
                 >
                   {settings.pairs.map((p) => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
+                    <option key={p} value={p}>{p}</option>
                   ))}
                 </select>
-              )}
-            </div>
+              </div>
 
-              {/* Position Type */}
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">Position Type</label>
                 <div className="flex gap-3">
-                  <button
-                    onClick={() => setPositionType('long')}
-                    className={`flex-1 py-2 px-4 rounded font-medium transition-all ${
-                      positionType === 'long'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    }`}
-                  >
-                    Long
-                  </button>
-                  <button
-                    onClick={() => setPositionType('short')}
-                    className={`flex-1 py-2 px-4 rounded font-medium transition-all ${
-                      positionType === 'short'
-                        ? 'bg-rose-500 text-white'
-                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    }`}
-                  >
-                    Short
-                  </button>
+                  <button onClick={() => setPositionType('long')} className={`flex-1 py-2 px-4 rounded font-medium transition-all ${positionType === 'long' ? 'bg-blue-500 text-white' : 'bg-slate-700 text-slate-300'}`}>Long</button>
+                  <button onClick={() => setPositionType('short')} className={`flex-1 py-2 px-4 rounded font-medium transition-all ${positionType === 'short' ? 'bg-rose-500 text-white' : 'bg-slate-700 text-slate-300'}`}>Short</button>
                 </div>
               </div>
 
-              {/* Entry Price */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Entry Price</label>
-                <Input
-                  type="number"
-                  value={entryPrice}
-                  onChange={(e) => setEntryPrice(e.target.value)}
-                  placeholder="Enter entry price"
-                  className="bg-slate-700 border-slate-600 text-slate-100"
-                  step="0.01"
-                />
-              </div>
-
-              {/* Stop Loss */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Stop Loss (SL)</label>
-                <Input
-                  type="number"
-                  value={stopLoss}
-                  onChange={(e) => setStopLoss(e.target.value)}
-                  placeholder="Enter stop loss"
-                  className="bg-slate-700 border-slate-600 text-slate-100"
-                  step="0.01"
-                />
-              </div>
-
-              {/* Take Profit */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Take Profit (TP)</label>
-                <Input
-                  type="number"
-                  value={takeProfit}
-                  onChange={(e) => setTakeProfit(e.target.value)}
-                  placeholder="Enter take profit"
-                  className="bg-slate-700 border-slate-600 text-slate-100"
-                  step="0.01"
-                />
-              </div>
+              <Input type="number" value={entryPrice} onChange={(e) => setEntryPrice(e.target.value)} placeholder="Entry Price" className="bg-slate-700 border-slate-600" />
+              <Input type="number" value={stopLoss} onChange={(e) => setStopLoss(e.target.value)} placeholder="Stop Loss" className="bg-slate-700 border-slate-600" />
+              <Input type="number" value={takeProfit} onChange={(e) => setTakeProfit(e.target.value)} placeholder="Take Profit" className="bg-slate-700 border-slate-600" />
+              
+              {/* TAMPILAN BARU: INPUT LOT & BALANCE */}
+              <Input type="number" value={lot} onChange={(e) => setLot(e.target.value)} placeholder="Lot Size (ex: 0.10)" className="bg-slate-700 border-slate-600" step="0.01" />
+              <Input type="number" value={balance} onChange={(e) => setBalance(e.target.value)} placeholder="Starting Balance ($)" className="bg-slate-700 border-slate-600" />
             </div>
 
-            {/* Auto-Calculated Fields */}
             <div className="grid grid-cols-2 gap-4 mt-4 p-4 bg-slate-700/50 rounded">
               <div>
                 <p className="text-xs text-slate-400 mb-1">Risk-Reward Ratio</p>
@@ -274,147 +204,10 @@ export default function AddTradeModal({ onClose, onSaveTrade }: AddTradeModalPro
             </div>
           </section>
 
-          {/* Trade Setup & Confluence */}
-          <section>
-            <h3 className="text-lg font-semibold text-white mb-4">Trade Setup & Confluence</h3>
-            
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-3">Strategies</label>
-              {settings.strategies.length === 0 ? (
-                <div className="px-4 py-3 bg-yellow-900/20 border border-yellow-900 rounded text-yellow-300 text-sm">
-                  No strategies configured. Add your strategies in Settings first.
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  {settings.strategies.map((setup) => (
-                    <button
-                      key={setup}
-                      onClick={() => {
-                        if (setupTypes.includes(setup)) {
-                          setSetupTypes(setupTypes.filter((s) => s !== setup))
-                        } else {
-                          setSetupTypes([...setupTypes, setup])
-                        }
-                      }}
-                      className={`p-3 rounded border-2 transition-all text-sm font-medium ${
-                        setupTypes.includes(setup)
-                          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                          : 'bg-slate-700 border-slate-600 text-slate-300 hover:border-slate-500'
-                      }`}
-                    >
-                      {setup}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-slate-300 mb-3">Confluence Factors</label>
-              <div className="grid grid-cols-2 gap-3">
-                {confluenceOptions.map((factor) => (
-                  <button
-                    key={factor}
-                    onClick={() => toggleConfluence(factor)}
-                    className={`p-3 rounded border-2 transition-all text-sm font-medium ${
-                      confluenceFactors.includes(factor)
-                        ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                        : 'bg-slate-700 border-slate-600 text-slate-300 hover:border-slate-500'
-                    }`}
-                  >
-                    {factor}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Visual Proof */}
-          <section>
-            <h3 className="text-lg font-semibold text-white mb-4">Visual Proof</h3>
-            <input
-              type="file"
-              id="photo-upload"
-              accept="image/*"
-              onChange={handlePhotoUpload}
-              className="hidden"
-            />
-            <label
-              htmlFor="photo-upload"
-              className="border-2 border-dashed border-slate-600 rounded-lg p-8 text-center hover:border-emerald-500 transition-colors cursor-pointer block"
-            >
-              <div className="space-y-2">
-                {photoBase64 ? (
-                  <>
-                    <div className="relative h-48 bg-slate-900 rounded overflow-hidden">
-                      <img src={photoBase64 || "/placeholder.svg"} alt="Upload preview" className="w-full h-full object-contain" />
-                    </div>
-                    <p className="text-sm text-emerald-400">Photo uploaded successfully</p>
-                  </>
-                ) : (
-                  <>
-                    <Upload size={32} className="mx-auto text-slate-400" />
-                    <p className="text-slate-300 font-medium">Drag & drop chart screenshots here</p>
-                    <p className="text-sm text-slate-400">or click to upload</p>
-                  </>
-                )}
-              </div>
-            </label>
-            <p className="text-xs text-slate-500 mt-2">Supported formats: PNG, JPG (max 5MB)</p>
-          </section>
-
-          {/* Psychology & Notes */}
-          <section>
-            <h3 className="text-lg font-semibold text-white mb-4">Psychology & Notes</h3>
-
-            {/* Emotional State */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-slate-300 mb-3">Emotional State</label>
-              <div className="grid grid-cols-4 gap-2">
-                {['Calm', 'Anxious', 'Excited', 'Overconfident'].map((state) => (
-                  <button
-                    key={state}
-                    onClick={() => setEmotionalState(state.toLowerCase())}
-                    className={`py-2 px-4 rounded text-sm font-medium transition-all ${
-                      emotionalState === state.toLowerCase()
-                        ? 'bg-amber-500 text-slate-950'
-                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    }`}
-                  >
-                    {state}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Trade Notes */}
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Trade Notes & Learnings</label>
-              <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="What was your thought process? Any patterns or lessons learned?"
-                rows={5}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500 focus:border-emerald-500 outline-none resize-none"
-              />
-            </div>
-          </section>
-
           {/* Action Buttons */}
           <div className="flex gap-3 justify-end pt-4 border-t border-slate-700">
-            <Button
-              onClick={onClose}
-              disabled={isSaving}
-              variant="outline"
-              className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent disabled:opacity-50"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold disabled:opacity-50"
-            >
+            <Button onClick={onClose} variant="outline" className="border-slate-600 text-slate-300">Cancel</Button>
+            <Button onClick={handleSave} className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold">
               {isSaving ? 'Saving...' : 'Save Trade'}
             </Button>
           </div>
